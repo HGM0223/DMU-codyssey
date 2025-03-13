@@ -7,7 +7,7 @@ from numpy import sort
 print('\n\nreadelines 사용')
 
 try :
-    f = open("mission_computer_main.log", 'r')
+    f = open("mission_computer_main.log", 'r', encoding='utf-8')
     lines = f.readlines()     #모든 줄을 요소로 하는 리스트 반환
     for line in lines:
         print(line)
@@ -16,9 +16,9 @@ try :
         if('explosion' in line or 'Rocket' in line) :
             #print(line)
             if(path.exists('log_matter.txt')):
-                matters_File = open('log_matter.txt', 'a')
+                matters_File = open('log_matter.txt', 'a', encoding='utf-8')
             else :
-                matters_File = open('log_matter.txt', 'w')
+                matters_File = open('log_matter.txt', 'w', encoding='utf-8')
 
             matters_File.write(line)
             matters_File.close()
