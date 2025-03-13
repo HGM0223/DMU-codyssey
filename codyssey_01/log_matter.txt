@@ -1,9 +1,1 @@
-2023-08-27 10:00:00,INFO,Rocket initialization process started.
-2023-08-27 10:20:00,INFO,Final system checks complete. Rocket is ready for launch.
-2023-08-27 10:30:00,INFO,Liftoff! Rocket has left the launchpad.
-2023-08-27 10:32:00,INFO,Initial telemetry received. Rocket is on its trajectory.
-2023-08-27 10:45:00,INFO,Second stage ignition. Rocket continues its ascent.
-2023-08-27 10:55:00,INFO,Second stage burn nominal. Rocket velocity increasing.
-2023-08-27 11:25:00,INFO,Main parachutes deployed. Rocket descent rate reducing.
-2023-08-27 11:28:00,INFO,Touchdown confirmed. Rocket safely landed.
 2023-08-27 11:40:00,INFO,Oxygen tank explosion.

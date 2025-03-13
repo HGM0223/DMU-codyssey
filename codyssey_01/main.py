@@ -3,6 +3,7 @@ print('Hello Mars')
 #readlines 사용
 from os import path
 from numpy import sort
+from datetime import datetime
 
 print('\n\nreadelines 사용')
 
@@ -11,9 +12,11 @@ try :
     lines = f.readlines()     #모든 줄을 요소로 하는 리스트 반환
     for line in lines:
         print(line)
+        #print(type(line))
+        #print(type(lines))
         
         #출력 결과 중 문제가 되는 부분을 log_matter.txt에 저장함
-        if('explosion' in line or 'Rocket' in line) :
+        if('explosion' in line) :
             #print(line)
             if(path.exists('log_matter.txt')):
                 matters_File = open('log_matter.txt', 'a', encoding='utf-8')
@@ -39,18 +42,12 @@ finally :
         print('열린 파일 닫음')
 
 
-# 시간 역순으로 출력력
+# 시간 역순으로 출력
 print('\n\n시간 역순으로 출력')
-lines.sort(reverse=True)  #시간 역순으로 정렬 및 출력
+#lines.sort(reverse=True)  #시간 역순으로 정렬 및 
+lines.sort(key=lambda x:x.split(",",1), reverse=True) 
 for line in lines:
-    print(line)
-
-
-
-
-
-
-
+   print(line)
 
 
 
