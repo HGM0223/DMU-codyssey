@@ -8,7 +8,7 @@ from datetime import datetime
 print('\n\nreadelines 사용')
 
 try :
-    f = open("mission_computer_main.log", 'r', encoding='utf-8')
+    f = open("codyssey_01/mission_computer_main.log", 'r', encoding='utf-8')
     lines = f.readlines()     #모든 줄을 요소로 하는 리스트 반환
     for line in lines:
         print(line)
@@ -45,7 +45,8 @@ finally :
 # 시간 역순으로 출력
 print('\n\n시간 역순으로 출력')
 #lines.sort(reverse=True)  #시간 역순으로 정렬 및 
-lines.sort(key=lambda x:x.split(",",1), reverse=True) 
+lines = lines[1:]
+lines.sort(key=lambda x:x.split(",")[0], reverse=True) 
 for line in lines:
    print(line)
 
