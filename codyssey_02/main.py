@@ -1,5 +1,6 @@
 
 import csv
+import pickle
 
 
 def process_flammable_csv() :
@@ -17,8 +18,6 @@ def process_flammable_csv() :
         Inventory_Lists_header = Inventory_Lists[0]
         Inventory_Lists_data = Inventory_Lists[1:] #헤더 제거 
         Inventory_Lists_data.sort(key=lambda x: float(x.split(',')[4]), reverse=True) # ',' 기준 5번째 요소를 내림차순 정렬
-        
-
 
     except Exception as e :
         print('Mars_Base_Inventory_List파일 처리중 오류 발생 : ',e)
@@ -35,11 +34,31 @@ def process_flammable_csv() :
                     print(f_list)  #인화성 지수가 0.7이상인 물질 출력
                     data = f_list.split(',') 
                     writer.writerow(data) #리스트로 바꾼후 csv파일에 입력
+
             print('인화성 지수가 0.7이상되는 목록을 csv로 저장 완료')
 
     except Exception as e :
         print('Mars_Base_Inventory_danger파일 처리중 오류 발생 : ',e)
            
+
+    try :   
+        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'wb') as binary_file :
+            pickle.dump(Inventory_Lists_data, binary_file)
+
+        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'rb') as binary_file :
+            load_binary_file = pickle.load(binary_file)
+            
+            # 이진수로 파일 내용 출력하는 방법
+            binary_data = binary_file.read() #바이트 형태로 읽어오기
+            binary_string = ' '.join(format(byte, '08b') for byte in binary_data)
+            print(binary_string)
+        
+        #원래 내용 그래로 출력하는 방법
+        print('\n이진파일로 저장된 내용 출력-----------------')
+        print("".join(load_binary_file))
+
+    except Exception as e :
+        print('Mars_Base_Inventory_List.bin파일 처리중 오류 발생 : ',e)
 
 
 
