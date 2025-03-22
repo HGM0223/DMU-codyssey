@@ -1,4 +1,7 @@
 
+import csv
+import pickle
+
 
 def process_flammable_csv() :
     try :
@@ -24,40 +27,44 @@ def process_flammable_csv() :
         print('Mars_Base_Inventory_List파일 처리중 오류 발생 : ',e)
 
 
-    try:
-        print('\n인화성 지수가 0.7 이상인 물질--------------------------------\n')
-        with open('codyssey_02/Mars_Base_Inventory_danger.csv', mode='w', encoding='utf-8') as danger_file:
-            danger_file.write(Inventory_Lists_header)
+    try :  
+        print('\n인화성 지수가 0.7이상인 물질--------------------------------\n')
+        with open('codyssey_02/Mars_Base_Inventory_danger.csv', mode='w', encoding='utf-8') as danger_file :
 
-            for f_list in Inventory_Lists_data:
-                if float(f_list.split(',')[4]) >= 0.7:
-                    print(f_list.strip())
-                    danger_file.write(f_list)
+            header = Inventory_Lists_header.strip().split(',') #기존 csv파일의 header를 가져오는 과정
+            writer = csv.writer(danger_file)
+            writer.writerow(header)
 
-        print('인화성 지수가 0.7 이상되는 목록을 csv로 저장 완료')
-    
-    except Exception as e:
-        print('Mars_Base_Inventory_danger 파일 처리 중 오류 발생:', e)
-        return
-    
+            for f_list in Inventory_Lists_data :
+                if float(f_list.split(',')[4]) >= 0.7 :
+                    print(f_list)  #인화성 지수가 0.7이상인 물질 출력
+                    data = f_list.strip().split(',') 
+                    writer.writerow(data) #리스트로 바꾼후 csv파일에 입력
+
+            print('인화성 지수가 0.7이상되는 목록을 csv로 저장 완료')
+
+    except Exception as e :
+        print('Mars_Base_Inventory_danger파일 처리중 오류 발생 : ',e)
            
 
-    try:
-        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'wb') as binary_file:
-            for line in Inventory_Lists_data:
-                binary_file.write(line.encode('utf-8'))
-                binary_file.write(b'\n')
+    try :   
+        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'wb') as binary_file :
+            pickle.dump(Inventory_Lists_data, binary_file)
+
+        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'rb') as binary_file :
+            load_binary_file = pickle.load(binary_file)
+            
+            # 이진수로 파일 내용 출력하는 방법
+            #binary_data = binary_file.read() #바이트 형태로 읽어오기
+            #binary_string = ' '.join(format(byte, '08b') for byte in binary_data)
+            #print(binary_string)
         
-        with open('codyssey_02/Mars_Base_Inventory_List.bin', 'rb') as binary_file:
-            load_binary_file = binary_file.readlines()
-        
-        print('\n이진 파일로 저장된 내용 출력----------------------------------')
-        for line in load_binary_file:
-            print(line.decode('utf-8').strip())
-    
-    except Exception as e:
-        print('Mars_Base_Inventory_List.bin 파일 처리 중 오류 발생:', e)
-        return
+        #원래 내용 그래로 출력하는 방법
+        print('\n이진파일로 저장된 내용 출력----------------------------------')
+        print("".join(load_binary_file))
+
+    except Exception as e :
+        print('Mars_Base_Inventory_List.bin파일 처리중 오류 발생 : ',e)
 
 
 
