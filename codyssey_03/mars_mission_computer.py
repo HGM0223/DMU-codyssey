@@ -17,6 +17,9 @@ class DummySensor :
         }
 
     def set_env(self) :
+        #user_time = input("날짜와 시간을 입력하세요 (예: 2025-03-27 14:30): ")
+        #self.current_time = f"[{user_time}]"
+
         self.env_values['mars_base_internal_temperature'] = random.randint(18,30) #randint는 정수, uniform은 실수
         self.env_values['mars_base_external_temperature'] = random.randint(0,21)
         self.env_values['mars_base_internal_humidity'] = random.randint(50,60)
@@ -25,7 +28,8 @@ class DummySensor :
         self.env_values['mars_base_internal_oxygen'] = random.randint(4,7)
 
     def get_env(self) :
-        now = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장
+        now = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장. 시간날짜를 문자열로 반환할 때 strftime, 문자열을 datetime으로 반환할 때 strptime
+        #now = self.current_time
         log_content = ''
         log_content += '\n'
         log_content += str(now)
