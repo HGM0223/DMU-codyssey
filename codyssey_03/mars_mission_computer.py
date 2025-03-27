@@ -17,8 +17,13 @@ class DummySensor :
         }
 
     def set_env(self) :
-        #user_time = input("날짜와 시간을 입력하세요 (예: 2025-03-27 14:30): ")
-        #self.current_time = f"[{user_time}]"
+        # 랜덤 값이 변수에 찍히는 시간 저장 -> 한국 표준 시간을 세계시간 사이트에서 받아오는 방법도 있음.(인터넷이 안되면 사용할 수 없음)
+        user_time = input("날짜와 시간을 입력하세요 (예: 2025-03-27 14:30): ")
+        self.current_time = f"[{user_time}]"
+
+        # 외부 라이브러리 datetime 사용
+        #current_time_datetime = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장. 시간날짜를 문자열로 반환할 때 strftime, 문자열을 datetime으로 반환할 때 strptime
+
 
         self.env_values['mars_base_internal_temperature'] = random.randint(18,30) #randint는 정수, uniform은 실수
         self.env_values['mars_base_external_temperature'] = random.randint(0,21)
@@ -28,13 +33,13 @@ class DummySensor :
         self.env_values['mars_base_internal_oxygen'] = random.randint(4,7)
 
     def get_env(self) :
-        now = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장. 시간날짜를 문자열로 반환할 때 strftime, 문자열을 datetime으로 반환할 때 strptime
-        #now = self.current_time
+        now = self.current_time
+        #now = self.current_time_datetime
         log_content = ''
         log_content += '\n'
         log_content += str(now)
 
-        for i, value in enumerate(self.env_values.values()) :
+        for i, value in enumerate(self.env_values.values()) : # log 저장하는 부분은 따로 함수로 만들면 좋을듯
             log_content += ','
             log_content += str(value)
 
@@ -45,7 +50,7 @@ class DummySensor :
         # 컴프리헨션
         # log_content = f"\n{now}," + ",".join(str(v) for v in self.env_values.values())
 
-        open_file_write(sensor_values_log_file_path, log_content)
+        open_file_write(sensor_values_log_file_path, log_content) # 요구사항에 맞게 log함수를 get_env에서 쓰면 값을 읽어올 때마다 log에 같은 값이 찍히는 문제 발생, set_env에 넣는게 더 적합함.
         print('\n센서값을 로그에 저장했습니다.')
 
         return self.env_values
@@ -56,6 +61,7 @@ def print_DummySensor(env_value) :
     for key, value in env_value.items() : # 센서값 키 : 값 형태로 출력
         print(key, ':', value)
     
+
 def open_file_write(path, content) :
     try:
         with open(path, 'a', encoding='utf-8') as f :
@@ -63,6 +69,7 @@ def open_file_write(path, content) :
     except Exception as e:
         print(f'오류발생 : {e}\n')
         return None
+
 
 def write_header_if_needed(path, header) :
     try: 
@@ -92,7 +99,7 @@ if __name__ == "__main__" :
 
 
 '''
-    # ds값 반복해서 바꾸며 로그 남기기기
+    # ds값 반복해서 바꾸며 로그 남기기
     while True :
         prompt = input('\n\n엔터시 환경값 측정(종료시 q) : ')
         if prompt == '':
