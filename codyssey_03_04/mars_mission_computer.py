@@ -1,6 +1,9 @@
+import time
 import random
 from datetime import datetime 
-sensor_values_log_file_path = 'codyssey_03/env_sensor.csv'
+sensor_values_log_file_path = 'codyssey_03_04/env_sensor.csv'
+stop_file_path = 'codyssey_03_04/stop_signal.txt'
+
 
 class DummySensor :
     def __init__(self) :  
@@ -18,11 +21,11 @@ class DummySensor :
 
     def set_env(self) :
         # 랜덤 값이 변수에 찍히는 시간 저장 -> 한국 표준 시간을 세계시간 사이트에서 받아오는 방법도 있음.(인터넷이 안되면 사용할 수 없음)
-        user_time = input("날짜와 시간을 입력하세요 (예: 2025-03-27 14:30): ")
-        self.current_time = f"[{user_time}]"
+        #user_time = input("날짜와 시간을 입력하세요 (예: 2025-03-27 14:30): ")
+        #self.current_time = f"[{user_time}]"
 
         # 외부 라이브러리 datetime 사용
-        #current_time_datetime = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장. 시간날짜를 문자열로 반환할 때 strftime, 문자열을 datetime으로 반환할 때 strptime
+        self.current_time_datetime = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]") # 현재 시간 저장. 시간날짜를 문자열로 반환할 때 strftime, 문자열을 datetime으로 반환할 때 strptime
 
 
         self.env_values['mars_base_internal_temperature'] = random.randint(18,30) #randint는 정수, uniform은 실수
@@ -33,8 +36,8 @@ class DummySensor :
         self.env_values['mars_base_internal_oxygen'] = random.randint(4,7)
 
     def get_env(self) :
-        now = self.current_time
-        #now = self.current_time_datetime
+        #now = self.current_time
+        now = self.current_time_datetime
         log_content = ''
         log_content += '\n'
         log_content += str(now)
@@ -54,7 +57,7 @@ class DummySensor :
         print('\n센서값을 로그에 저장했습니다.')
 
         return self.env_values
-    
+
 
 
 def print_DummySensor(env_value) :
@@ -70,6 +73,22 @@ def open_file_write(path, content) :
         print(f'오류발생 : {e}\n')
         return None
 
+def open_file_write_w(path, content) :
+    try:
+        with open(path, 'w', encoding='utf-8') as f :
+            return f.write(content)
+    except Exception as e:
+        print(f'오류발생 : {e}\n')
+        return None
+    
+def open_file_read(path) :
+    try:
+        with open(path, 'r', encoding='utf-8') as f :
+            return f.read()
+    except Exception as e:
+        print(f'오류발생 : {e}\n')
+        return None
+
 
 def write_header_if_needed(path, header) :
     try: 
@@ -81,10 +100,93 @@ def write_header_if_needed(path, header) :
         with open(path, 'w', encoding='utf-8') as f :
             f.write(header + '\n')
 
+# codyssey_04 내용
+class MissionComputer :
+    def __init__(self) :  
+         # 사전객체를 env_values 속성으로 정의
+        self.env_values = {
+            'mars_base_internal_temperature' : None,
+            'mars_base_external_temperature' : None,
+            'mars_base_internal_humidity' : None,
+            'mars_base_external_illuminance' : None,
+            'mars_base_internal_co2' : None,
+            'mars_base_internal_oxygen' : None
+        }
 
+
+    def get_sensor_data(self, dummy_sensor_instance) :
+        # 5분마다 센서값의 평균값을 출력하기 위한 초기값 설정정
+        count = 0
+        start_time = time.time()
+        sum_env_values = {
+            'mars_base_internal_temperature' : 0,
+            'mars_base_external_temperature' : 0,
+            'mars_base_internal_humidity' : 0,
+            'mars_base_external_illuminance' : 0,
+            'mars_base_internal_co2' : 0,
+            'mars_base_internal_oxygen' : 0
+        }
+
+        while True :
+            current_time = time.time()
+            if current_time - start_time >= 15 :
+                print('\n센서 평균값 출력-------------------------------------')
+                for key, value in sum_env_values.items() :
+                    print(f'{key} : {value/count:.3f}')
+                    # 환경값의 총합 변수 초기화
+                    sum_env_values[key] = 0
+                count = 0
+                start_time = start_time + 15 
+
+            # 엔터키 입력시 환경 출력 중지
+            if open_file_read(stop_file_path).strip() == 'STOP' :
+                open_file_write_w(stop_file_path,'None')
+                print('System stoped...')
+                break
+            else : 
+                print('\n센서값 출력')
+                dummy_sensor_instance.set_env()
+                json_data = ''
+                json_data += '\n{'
+
+                for key, value in dummy_sensor_instance.get_env().items() :
+                    # 센서값을 가져와 MissionComputer인스턴스의 env_values에 담기
+                    self.env_values[key] = value
+                    # 센서값을 sum변수에도 담기기
+                    sum_env_values[key] += value
+
+                    # json 형태로 환경 정보 출력하기
+                    json_data += '\n "'+f'{key}'+'" : '+f'{value}'+''
+
+                json_data += '\n}'
+                print(json_data)
+                count += 1
+                time.sleep(5)
+
+    
+
+        
 
 if __name__ == "__main__" :
+    log_header =  str('시간,화성 기지 내부 온도,화성 기지 외부 온도,화성 기지 내부 습도,화성 기지 외부 광량,화성 기지 내부 이산화탄소 농도,화성 기지 내부 산소 농도')
+    write_header_if_needed(sensor_values_log_file_path, log_header) # 파일이 제대로 만들어져 있으면 헤더는 다시 안써도 됨
 
+    ds = DummySensor()
+    RunComputer = MissionComputer()
+    RunComputer.get_sensor_data(ds)
+
+
+
+
+
+
+
+
+
+
+
+    '''
+if __name__ == "__main__" :
     log_header =  str('시간,화성 기지 내부 온도,화성 기지 외부 온도,화성 기지 내부 습도,화성 기지 외부 광량,화성 기지 내부 이산화탄소 농도,화성 기지 내부 산소 농도')
     write_header_if_needed(sensor_values_log_file_path, log_header) # 파일이 제대로 만들어져 있으면 헤더는 다시 안써도 됨
 
@@ -94,7 +196,7 @@ if __name__ == "__main__" :
     print_DummySensor(sensor_values)
     print('센서값 측정 및 출력을 완료했습니다.\n')
 
-    
+    '''
 
 
 
