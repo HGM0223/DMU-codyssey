@@ -113,12 +113,12 @@ class MissionComputer :
             'mars_base_internal_oxygen' : None
         }
 
-
+    
     def get_sensor_data(self, dummy_sensor_instance) :
-        # 5분마다 센서값의 평균값을 출력하기 위한 초기값 설정정
+        # 5분마다 센서값의 평균값을 출력하기 위한 초기값 설정
         count = 0
         start_time = time.time()
-        sum_env_values = {
+        sum_env_values = {   # 데이터 불변성 중요.
             'mars_base_internal_temperature' : 0,
             'mars_base_external_temperature' : 0,
             'mars_base_internal_humidity' : 0,
@@ -129,7 +129,7 @@ class MissionComputer :
 
         while True :
             current_time = time.time()
-            if current_time - start_time >= 15 :
+            if current_time - start_time >= 15 : # 5분은 300초
                 print('\n센서 평균값 출력-------------------------------------')
                 for key, value in sum_env_values.items() :
                     print(f'{key} : {value/count:.3f}')
@@ -138,7 +138,7 @@ class MissionComputer :
                 count = 0
                 start_time = start_time + 15 
 
-            # 엔터키 입력시 환경 출력 중지
+            # 엔터키 입력시 환경 출력 중지 -> ctrlC 누르면 예외처리 할 수 있음.
             if open_file_read(stop_file_path).strip() == 'STOP' :
                 open_file_write_w(stop_file_path,'None')
                 print('System stoped...')
@@ -146,22 +146,30 @@ class MissionComputer :
             else : 
                 print('\n센서값 출력')
                 dummy_sensor_instance.set_env()
-                json_data = ''
-                json_data += '\n{'
-
-                for key, value in dummy_sensor_instance.get_env().items() :
-                    # 센서값을 가져와 MissionComputer인스턴스의 env_values에 담기
+                json_data = '\n{'
+                for i, (key, value) in enumerate(dummy_sensor_instance.get_env().items()):
                     self.env_values[key] = value
-                    # 센서값을 sum변수에도 담기기
                     sum_env_values[key] += value
-
-                    # json 형태로 환경 정보 출력하기
-                    json_data += '\n "'+f'{key}'+'" : '+f'{value}'+''
-
+                    json_data += '\n "' + f'{key}' + '" : ' + f'{value}' + ''
+                    if(i < 5) :
+                        json_data +=','
                 json_data += '\n}'
                 print(json_data)
                 count += 1
-                time.sleep(5)
+                
+                # sleep 중에도 정확한 간격을 맞추기 위한 시간 조절. time.sleep(5)대신 아래처럼럼
+                time_to_next_check = max(0, 5 - (time.time() - current_time))
+                time.sleep(time_to_next_check)
+
+    def get_mission_computer_info() :
+        sys_values = {
+            'os' : None,
+            'os_v' : None,
+            'cpu_type' : None,
+            'cpu_core' : 0,
+            'memory_size' : 0
+        }
+
 
     
 
