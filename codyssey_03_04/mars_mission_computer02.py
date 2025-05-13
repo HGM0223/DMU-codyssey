@@ -166,7 +166,7 @@ class MissionComputer :
                 time_to_next_check = max(0, 5 - (time.time() - current_time))
                 time.sleep(time_to_next_check)
 
-    def get_mission_computer_info(self, system_values) :
+    def get_mission_computer_info(self, settings) :
         # 미션 컴퓨터의 시스템 정보를 저장하는 변수
         '''
         try :
@@ -206,7 +206,7 @@ class MissionComputer :
         print(json_data)
 
 
-    def get_mission_computer_load(self, system_values) :
+    def get_mission_computer_load(self, settings) :
         '''
         try : 
             p = psutil.Process()
@@ -241,6 +241,7 @@ class MissionComputer :
 
 
 
+
         
 
 if __name__ == "__main__" :
@@ -258,45 +259,3 @@ if __name__ == "__main__" :
     
     runComputer.get_mission_computer_info(system_values)
     runComputer.get_mission_computer_load(system_values)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '''
-if __name__ == "__main__" :
-    log_header =  str('시간,화성 기지 내부 온도,화성 기지 외부 온도,화성 기지 내부 습도,화성 기지 외부 광량,화성 기지 내부 이산화탄소 농도,화성 기지 내부 산소 농도')
-    write_header_if_needed(sensor_values_log_file_path, log_header) # 파일이 제대로 만들어져 있으면 헤더는 다시 안써도 됨
-
-    ds = DummySensor() # 인스턴스 생성
-    ds.set_env() # 랜덤값 set
-    sensor_values = ds.get_env() # 센서값 리턴 받기
-    print_DummySensor(sensor_values)
-    print('센서값 측정 및 출력을 완료했습니다.\n')
-
-    '''
-
-
-
-'''
-    # ds값 반복해서 바꾸며 로그 남기기
-    while True :
-        prompt = input('\n\n엔터시 환경값 측정(종료시 q) : ')
-        if prompt == '':
-            ds.set_env() # 랜덤값 set
-            sensor_values = ds.get_env() # 센서값 리턴 받기
-            print_DummySensor(sensor_values)
-            print('\n환경값을 측정하고 로그를 저장했습니다')
-        elif prompt =='q' :  
-            print('\n측정 종료합니다.')
-            break
-'''    

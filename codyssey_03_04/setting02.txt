@@ -1,0 +1,7 @@
+운영체계:true
+운영체계 버전:false
+CPU 타입:true
+CPU 코어수:true
+memory 크기:false
+CPU 사용량:true
+메모리 사용량:false

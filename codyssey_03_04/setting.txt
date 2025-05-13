@@ -1,0 +1,7 @@
+Windows
+10.0.22631
+Intel64 Family 6 Model 126 Stepping 5, GenuineIntel
+8
+8285495296
+0.0
+22.828125
