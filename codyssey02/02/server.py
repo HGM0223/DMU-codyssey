@@ -41,7 +41,7 @@ class myHandler(BaseHTTPRequestHandler):                    # http 서버가 실
     
 
 if __name__ == '__main__':
-    server_address = ('127.0.0.1', 8080)              # 서버가 바인딩할 주소와 포트
+    server_address = ('127.0.0.1', 8080)              # 서버가 바인딩할 주소와 포트. 0.0.0.0은 내가 가진 어떤 ip로 오는 요청도 받겠다는 의미(LAN이 여러개면 ip도 여러개인가봄)
     httpd = HTTPServer(server_address, myHandler)     # HTTP서버 생성
     print('서버 시작')
     try:
